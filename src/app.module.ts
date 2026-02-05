@@ -1,10 +1,33 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ObrasModule } from './obras/obras.module';
+import { DependenciasModule } from './dependencias/dependencias.module';
+import { MunicipiosModule } from './municipios/municipios.module';
 
 @Module({
-  imports: [ObrasModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DATABASE_HOST || 'localhost',
+      port: parseInt(process.env.DATABASE_PORT || '5432'),
+      username: process.env.DATABASE_USER || 'admin',
+      password: process.env.DATABASE_PASSWORD || 'password123',
+      database: process.env.DATABASE_NAME || 'obras_yucatan_db',
+      entities: ['dist/**/*.entity.js'],
+      synchronize: true,
+      logging: false,
+    }),
+    ObrasModule,
+    DependenciasModule,
+    MunicipiosModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
