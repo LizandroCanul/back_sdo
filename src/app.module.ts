@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import { ObrasModule } from './obras/obras.module';
 import { DependenciasModule } from './dependencias/dependencias.module';
 import { MunicipiosModule } from './municipios/municipios.module';
+import { LocalidadModule } from './catalogos/localidad/localidad.module';
+import { TipoProyectoModule } from './catalogos/tipo-proyecto/tipo-proyecto.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { MunicipiosModule } from './municipios/municipios.module';
     ObrasModule,
     DependenciasModule,
     MunicipiosModule,
+    LocalidadModule,
+    TipoProyectoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
