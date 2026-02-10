@@ -8,6 +8,8 @@ import { DependenciasModule } from './dependencias/dependencias.module';
 import { MunicipiosModule } from './municipios/municipios.module';
 import { LocalidadModule } from './catalogos/localidad/localidad.module';
 import { TipoProyectoModule } from './catalogos/tipo-proyecto/tipo-proyecto.module';
+import { EstatusObraModule } from './catalogos/estatus-obra/estatus-obra.module';
+import { EjercicioFiscalModule } from './catalogos/ejercicio-fiscal/ejercicio-fiscal.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { TipoProyectoModule } from './catalogos/tipo-proyecto/tipo-proyecto.modu
     MunicipiosModule,
     LocalidadModule,
     TipoProyectoModule,
+    EstatusObraModule,
+    EjercicioFiscalModule,
   ],
   controllers: [AppController],
   providers: [AppService],
