@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ObrasService } from './obras.service';
 import { CreateObraDto } from './dto/create-obra.dto';
 import { UpdateObraDto } from './dto/update-obra.dto';
+import { FilterObraDto } from './dto/filter-obra.dto'; // <--- IMPORTANTE
 
 @Controller('obras')
 export class ObrasController {
@@ -12,9 +13,10 @@ export class ObrasController {
     return this.obrasService.create(createObraDto);
   }
 
+  // --- AQUÍ ESTÁ EL CAMBIO ---
   @Get()
-  findAll() {
-    return this.obrasService.findAll();
+  findAll(@Query() filterDto: FilterObraDto) {
+    return this.obrasService.findAll(filterDto);
   }
 
   @Get(':id')

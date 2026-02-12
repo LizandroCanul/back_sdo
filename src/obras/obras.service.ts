@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, Brackets } from 'typeorm'; // <--- AGREGAMOS Brackets
 import { CreateObraDto } from './dto/create-obra.dto';
 import { UpdateObraDto } from './dto/update-obra.dto';
+import { FilterObraDto } from './dto/filter-obra.dto'; // <--- IMPORTANTE
 import { Obra } from './entities/obra.entity';
 import { ObraUbicacion } from './entities/obra-ubicacion.entity';
 
@@ -36,22 +37,69 @@ export class ObrasService {
       estatusObra: { id: createObraDto.estatusObraId },
       ubicaciones: createObraDto.ubicaciones?.map(u => ({
         ...u,
-        municipio: { id: u.municipioId } // Relación dentro de ubicación
+        municipio: { id: u.municipioId }
       }))
     });
 
     return await this.obraRepository.save(nuevaObra);
   }
 
-  // --- LEER TODOS ---
-  async findAll() {
-    return await this.obraRepository.find({
-      relations: [
-        'municipio', 'tipoProyecto', 'ejercicioFiscal', 'dependencia', 'estatusObra',
-        'ubicaciones', 'ubicaciones.municipio'
-      ],
-      order: { id: 'DESC' }
-    });
+  // --- BUSCADOR AVANZADO (findAll MODIFICADO) ---
+  async findAll(filterDto: FilterObraDto) {
+    const { limit = 10, page = 1, search, ejercicioFiscalId, municipioId } = filterDto;
+
+    // 1. Iniciamos el QueryBuilder
+    const query = this.obraRepository.createQueryBuilder('obra');
+
+    // 2. Relaciones (Joins)
+    query.leftJoinAndSelect('obra.municipio', 'municipio')
+         .leftJoinAndSelect('obra.dependencia', 'dependencia')
+         .leftJoinAndSelect('obra.ejercicioFiscal', 'ejercicioFiscal')
+         .leftJoinAndSelect('obra.estatusObra', 'estatusObra')
+         .leftJoinAndSelect('obra.tipoProyecto', 'tipoProyecto')
+         .leftJoinAndSelect('obra.ubicaciones', 'ubicaciones');
+
+    // 3. Filtros Exactos
+    if (ejercicioFiscalId) {
+      query.andWhere('obra.ejercicioFiscalId = :ejercicioFiscalId', { ejercicioFiscalId });
+    }
+
+    if (municipioId) {
+      query.andWhere('obra.municipioId = :municipioId', { municipioId });
+    }
+
+    // 4. Búsqueda de Texto (Nombre, Descripción o Clave)
+    if (search) {
+      query.andWhere(
+        new Brackets((qb) => {
+          qb.where('obra.nombre ILIKE :search', { search: `%${search}%` })
+            .orWhere('obra.descripcion ILIKE :search', { search: `%${search}%` })
+            .orWhere('obra.claveUnica ILIKE :search', { search: `%${search}%` });
+        }),
+      );
+    }
+
+    // 5. Paginación
+    const skip = (page - 1) * limit;
+    query.skip(skip).take(limit);
+
+    // 6. Ordenar (Lo más reciente primero)
+    query.orderBy('obra.id', 'DESC');
+
+    // 7. Ejecutar y contar
+    const [data, total] = await query.getManyAndCount();
+
+    // 8. Retornar estructura para el Frontend
+    return {
+      data: data,
+      meta: {
+        totalItems: total,        // Total en BD (para saber cuántas páginas hay)
+        itemCount: data.length,   // Cuántas devolví en esta petición
+        itemsPerPage: limit,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+      },
+    };
   }
 
   // --- LEER UNO ---
@@ -68,21 +116,12 @@ export class ObrasService {
     return obra;
   }
 
-  // --- ACTUALIZAR (CON BORRADO DE HUÉRFANOS) ---
+  // --- ACTUALIZAR ---
   async update(id: number, updateObraDto: UpdateObraDto) {
-    // 1. Lógica manual para detectar y borrar ubicaciones eliminadas
     if (updateObraDto.ubicaciones) {
       const obraOriginal = await this.findOne(id);
-      
-      // Obtenemos los IDs que vienen del Frontend (filtro para asegurar que traigan ID)
-      const idsEntrantes = updateObraDto.ubicaciones
-        .filter(u => u.id)
-        .map(u => u.id);
-      
-      // Obtenemos los IDs que ya existen en la base de datos
+      const idsEntrantes = updateObraDto.ubicaciones.filter(u => u.id).map(u => u.id);
       const idsExistentes = obraOriginal.ubicaciones.map(u => u.id);
-      
-      // Calculamos cuáles existen en BD pero NO vienen en el JSON (esos se borran)
       const idsParaBorrar = idsExistentes.filter(idBD => !idsEntrantes.includes(idBD));
 
       if (idsParaBorrar.length > 0) {
@@ -90,7 +129,6 @@ export class ObrasService {
       }
     }
 
-    // 2. Actualización de campos y relaciones
     const obra = await this.obraRepository.preload({
       id: id,
       ...updateObraDto,
@@ -115,7 +153,7 @@ export class ObrasService {
     await this.obraRepository.remove(obra); 
   }
 
-  // --- MÉTODO PRIVADO: GENERADOR DE FOLIOS ---
+  // --- PRIVADO ---
   private async _generarSiguienteNumeroObra(anioId: number): Promise<number> {
     const ultimaObra = await this.obraRepository.createQueryBuilder('obra')
       .where('obra.ejercicioFiscalId = :anioId', { anioId })
