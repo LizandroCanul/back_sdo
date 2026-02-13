@@ -3,9 +3,10 @@ import { Municipio } from '../../municipios/entities/municipio.entity';
 import { TipoProyecto } from '../../catalogos/tipo-proyecto/entities/tipo-proyecto.entity';
 import { EstatusObra } from '../../catalogos/estatus-obra/entities/estatus-obra.entity';
 import { EjercicioFiscal } from '../../catalogos/ejercicio-fiscal/entities/ejercicio-fiscal.entity';
-// 👇 OJO: Ruta ajustada según tu imagen (está fuera de catalogos)
 import { Dependencia } from '../../dependencias/entities/dependencia.entity'; 
 import { ObraUbicacion } from './obra-ubicacion.entity';
+import { UserFavoriteObra } from '../../users/entities/user-favorite-obra.entity';
+
 
 @Entity('obras')
 export class Obra {
@@ -77,4 +78,8 @@ export class Obra {
     cascade: true
   })
   ubicaciones: ObraUbicacion[];
+
+  // --- RELACIÓN: USUARIOS QUE LA MARCAN COMO FAVORITA ---
+  @OneToMany(() => UserFavoriteObra, (fav) => fav.obra, { cascade: true })
+  usuariosQueLoMarcanFavorita: UserFavoriteObra[];
 }
