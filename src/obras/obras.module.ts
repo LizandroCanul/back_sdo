@@ -3,11 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ObrasService } from './obras.service';
 import { ObrasController } from './obras.controller';
 import { Obra } from './entities/obra.entity';
-import { ObraUbicacion } from './entities/obra-ubicacion.entity'; // <--- Importar
+import { ObraUbicacion } from './entities/obra-ubicacion.entity';
+import { UserFavoriteObra } from '../users/entities/user-favorite-obra.entity';
 
 @Module({
-  // ¡OJO AQUÍ! Deben estar las DOS entidades dentro de los corchetes []
-  imports: [TypeOrmModule.forFeature([Obra, ObraUbicacion])], 
+  imports: [TypeOrmModule.forFeature([Obra, ObraUbicacion, UserFavoriteObra])], 
   controllers: [ObrasController],
   providers: [ObrasService],
 })
