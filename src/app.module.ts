@@ -10,6 +10,7 @@ import { LocalidadModule } from './catalogos/localidad/localidad.module';
 import { TipoProyectoModule } from './catalogos/tipo-proyecto/tipo-proyecto.module';
 import { EstatusObraModule } from './catalogos/estatus-obra/estatus-obra.module';
 import { EjercicioFiscalModule } from './catalogos/ejercicio-fiscal/ejercicio-fiscal.module';
+import { SectorModule } from './catalogos/sector/sector.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 
@@ -37,6 +38,7 @@ import { UsersModule } from './users/users.module';
     TipoProyectoModule,
     EstatusObraModule,
     EjercicioFiscalModule,
+    SectorModule,
     AuthModule,
     UsersModule,
   ],

@@ -53,6 +53,11 @@ export class CreateObraDto {
   @IsNotEmpty()
   estatusObraId: number;
 
+  // 11. SECTOR
+  @IsNumber()
+  @IsOptional()
+  sectorId?: number;
+
   // UBICACIONES
   @IsArray()
   @ValidateNested({ each: true })

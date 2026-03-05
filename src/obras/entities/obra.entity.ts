@@ -3,6 +3,7 @@ import { Municipio } from '../../municipios/entities/municipio.entity';
 import { TipoProyecto } from '../../catalogos/tipo-proyecto/entities/tipo-proyecto.entity';
 import { EstatusObra } from '../../catalogos/estatus-obra/entities/estatus-obra.entity';
 import { EjercicioFiscal } from '../../catalogos/ejercicio-fiscal/entities/ejercicio-fiscal.entity';
+import { Sector } from '../../catalogos/sector/entities/sector.entity';
 import { Dependencia } from '../../dependencias/entities/dependencia.entity'; 
 import { ObraUbicacion } from './obra-ubicacion.entity';
 import { UserFavoriteObra } from '../../users/entities/user-favorite-obra.entity';
@@ -72,6 +73,14 @@ export class Obra {
 
   @Column({ name: 'estatus_obra_id' })
   estatusObraId: number;
+
+  // 11. SECTOR
+  @ManyToOne(() => Sector, { nullable: true, eager: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'sector_id' })
+  sector: Sector;
+
+  @Column({ name: 'sector_id', nullable: true })
+  sectorId: number;
 
   // --- HIJOS (Ubicaciones) ---
   @OneToMany(() => ObraUbicacion, (ubicacion) => ubicacion.obra, {

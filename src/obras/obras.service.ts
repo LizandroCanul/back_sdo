@@ -35,6 +35,7 @@ export class ObrasService {
       ejercicioFiscal: { id: createObraDto.ejercicioFiscalId },
       dependencia: { id: createObraDto.dependenciaId },
       estatusObra: { id: createObraDto.estatusObraId },
+      sector: createObraDto.sectorId ? { id: createObraDto.sectorId } : undefined,
       ubicaciones: createObraDto.ubicaciones?.map(u => ({
         ...u,
         municipio: { id: u.municipioId }
@@ -57,6 +58,7 @@ export class ObrasService {
          .leftJoinAndSelect('obra.ejercicioFiscal', 'ejercicioFiscal')
          .leftJoinAndSelect('obra.estatusObra', 'estatusObra')
          .leftJoinAndSelect('obra.tipoProyecto', 'tipoProyecto')
+         .leftJoinAndSelect('obra.sector', 'sector')
          .leftJoinAndSelect('obra.ubicaciones', 'ubicaciones');
 
     // 3. Filtros Exactos
@@ -107,7 +109,7 @@ export class ObrasService {
     const obra = await this.obraRepository.findOne({
       where: { id },
       relations: [
-        'municipio', 'tipoProyecto', 'ejercicioFiscal', 'dependencia', 'estatusObra',
+        'municipio', 'tipoProyecto', 'ejercicioFiscal', 'dependencia', 'estatusObra', 'sector',
         'ubicaciones', 'ubicaciones.municipio'
       ],
       order: { ubicaciones: { orden: 'ASC' } }
@@ -137,6 +139,7 @@ export class ObrasService {
       ejercicioFiscal: updateObraDto.ejercicioFiscalId ? { id: updateObraDto.ejercicioFiscalId } : undefined,
       dependencia: updateObraDto.dependenciaId ? { id: updateObraDto.dependenciaId } : undefined,
       estatusObra: updateObraDto.estatusObraId ? { id: updateObraDto.estatusObraId } : undefined,
+      sector: updateObraDto.sectorId ? { id: updateObraDto.sectorId } : undefined,
       ubicaciones: updateObraDto.ubicaciones ? updateObraDto.ubicaciones.map(u => ({
         ...u,
         municipio: u.municipioId ? { id: u.municipioId } : undefined
