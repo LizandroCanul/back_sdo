@@ -6,7 +6,7 @@ export class TipoProyecto {
   id: number;
 
   @Column({ type: 'varchar', length: 150, unique: true })
-  nombre: string; // Ej: "INFRAESTRUCTURA VIAL", "EDUCACIÓN"
+  nombre: string; // Ej: "Proyecto, Obra, Programa"
 
   @Column({ default: true })
   activo: boolean;
