@@ -24,6 +24,9 @@ export class User {
   @Column('bool', { default: true }) // Obliga a cambiar la contraseña al inicio
   mustChangePassword: boolean;
 
+  @Column({ type: 'timestamp', nullable: true, default: null })
+  lastLogin: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 

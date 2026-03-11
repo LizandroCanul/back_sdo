@@ -39,7 +39,7 @@ export class UsersService {
   // --- LEER TODOS ---
   async findAll() {
     return await this.userRepository.find({
-      select: ['id', 'email', 'nombreCompleto', 'roles', 'isActive', 'mustChangePassword']
+      select: ['id', 'email', 'nombreCompleto', 'roles', 'isActive', 'mustChangePassword', 'lastLogin']
     });
   }
 

@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service'; // Importamos el servicio de usuarios
+import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   // --- 1. VALIDAR CREDENCIALES ---
@@ -24,6 +29,9 @@ export class AuthService {
 
   // --- 2. GENERAR EL TOKEN (LOGIN) ---
   async login(user: any) {
+    // Registrar última conexión
+    await this.userRepository.update(user.id, { lastLogin: new Date() });
+
     const payload = { 
       sub: user.id,       // ID del usuario (Standard JWT)
       email: user.email, 

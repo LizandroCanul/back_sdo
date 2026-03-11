@@ -13,6 +13,7 @@ import { EjercicioFiscalModule } from './catalogos/ejercicio-fiscal/ejercicio-fi
 import { SectorModule } from './catalogos/sector/sector.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { PresenceModule } from './presence/presence.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { UsersModule } from './users/users.module';
     SectorModule,
     AuthModule,
     UsersModule,
+    PresenceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
